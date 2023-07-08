@@ -17,6 +17,7 @@
 		<Copyright>2023 Ori Almagor</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/Bip901/Configson</RepositoryUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
