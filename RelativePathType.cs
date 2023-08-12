@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Configson
 {
+    /// <summary>
+    /// Types of base directories paths may be relative to.
+    /// </summary>
     public enum RelativePathType
     {
         /// <summary>
