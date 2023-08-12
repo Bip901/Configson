@@ -2,7 +2,7 @@
 
 A tiny package for easy saving and loading of CSharp classes as JSON configuration files.
 
-[Download from NuGet](https://www.nuget.org/packages/Configson/)
+[![NuGet version](https://img.shields.io/nuget/v/Configson.svg)](https://www.nuget.org/packages/Configson/)
 
 ## Usage
 
