@@ -1,17 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Configson
 {
+    /// <summary>
+    /// A utility class for saving and loading configurations.
+    /// </summary>
     public static class ConfigurationIO
     {
+        /// <summary>
+        /// The directory that relative paths will be relative to. Defaults to the current working directory.
+        /// </summary>
         public static string BaseDirectory { get; private set; } = ".";
 
+        /// <summary>
+        /// Sets <see cref="BaseDirectory"/>. A common pattern is to call this once in a static constructor so you only need to specify relative paths when saving and loading objects later.
+        /// </summary>
         public static void SetBaseDirectory(string path, RelativePathType pathType = RelativePathType.RelativeToCurrentWorkingDirectory)
         {
             if (pathType == RelativePathType.RelativeToAppData)
@@ -25,16 +30,20 @@ namespace Configson
             BaseDirectory = path;
         }
 
+        /// <summary>
+        /// Custom options for serializing/deserializing objects. Defaults to null.
+        /// </summary>
         public static JsonSerializerOptions? JsonSerializerOptions { get; set; } = null;
 
         /// <summary>
         /// Loads the saved object from disk.
         /// </summary>
+        /// <param name="path">The path of the file to read from. If relative, treated as relative to <see cref="BaseDirectory"/>.</param>
         /// <exception cref="InvalidDataException"/>
         /// <exception cref="IOException"/>
-        public static T Load<T>(string relativePath)
+        public static T Load<T>(string path)
         {
-            string path = GetFilePath(relativePath);
+            path = GetFilePath(path);
 
             FileStream stream;
             try
@@ -67,18 +76,23 @@ namespace Configson
             return result;
         }
 
-        public static void Save<T>(T settings, string relativeFilename)
+        /// <summary>
+        /// Saves the given object to disk.
+        /// </summary>
+        /// <param name="obj">The object to save.</param>
+        /// <param name="path">The path of the file to write to. If relative, treated as relative to <see cref="BaseDirectory"/>.</param>
+        public static void Save<T>(T obj, string path)
         {
-            string path = GetFilePath(relativeFilename);
+            path = GetFilePath(path);
             using FileStream stream = new(path, FileMode.Create, FileAccess.Write);
             using Utf8JsonWriter jWriter = new(stream, new JsonWriterOptions() { Indented = true });
-            JsonSerializer.Serialize(jWriter, settings, JsonSerializerOptions);
+            JsonSerializer.Serialize(jWriter, obj, JsonSerializerOptions);
         }
 
         /// <summary>
         /// Returns the path to the given file, creating all parents if necessary.
         /// </summary>
-        /// <param name="relativePath">A file path relative to <see cref="BaseDirectory"/>.</param>
+        /// <param name="relativePath">A file path relative to <see cref="BaseDirectory"/>. If absolute, returned as-is.</param>
         public static string GetFilePath(string relativePath)
         {
             string filePath = Path.Combine(BaseDirectory, relativePath);
