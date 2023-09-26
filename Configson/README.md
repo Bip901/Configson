@@ -7,11 +7,11 @@ A tiny package for easy saving and loading of CSharp classes as JSON configurati
 ## Usage
 
 ```csharp
-//Define a data class
+//Define a data class (any json-serializable class will do)
 record Config(string Color, int Size);
 
 // Example instance
-config = Config("Red", 3);
+Config config = new Config("Red", 3);
 
 // Save
 ConfigurationIO.Save(config, "config.json");
