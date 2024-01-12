@@ -10,7 +10,6 @@
 
 	<PropertyGroup>
 		<PackageId>Configson</PackageId>
-		<Version>$(VERSION)</Version>
 		<Authors>Bip901</Authors>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>Configson</Title>
