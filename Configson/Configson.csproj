@@ -27,5 +27,9 @@
 	    <PackagePath>\</PackagePath>
 	  </None>
 	</ItemGroup>
+	
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	  <Copy SourceFiles="../README.md" DestinationFiles="README.md" UseHardlinksIfPossible="true"/>
+	</Target>
 
 </Project>
