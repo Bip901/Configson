@@ -4,7 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>0.5.2</Version>
+		<Version>0.5.3</Version>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 
@@ -18,6 +18,9 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/Bip901/Configson</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageProjectUrl>https://github.com/Bip901/Configson</PackageProjectUrl>
+		<PackageTags>configuration serialization</PackageTags>
 		<DocumentationFile>$(MSBuildProjectDirectory)/bin/$(Configuration)/$(TargetFramework)/Configson.xml</DocumentationFile>
 	</PropertyGroup>
 
