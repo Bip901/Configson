@@ -36,6 +36,11 @@ public static class ConfigurationIO
     public static JsonSerializerOptions? JsonSerializerOptions { get; set; } = null;
 
     /// <summary>
+    /// Custom options for writing output JSONs. Defaults to indented.
+    /// </summary>
+    public static JsonWriterOptions JsonWriterOptions { get; set; } = new JsonWriterOptions() { Indented = true };
+
+    /// <summary>
     /// Loads the saved object from disk.
     /// </summary>
     /// <param name="path">The path of the file to read from. If relative, treated as relative to <see cref="BaseDirectory"/>.</param>
@@ -54,10 +59,21 @@ public static class ConfigurationIO
         {
             throw new IOException(ex.Message, ex);
         }
+        return Load<T>(stream);
+    }
+
+    /// <summary>
+    /// Loads the saved object from the given input stream.
+    /// </summary>
+    /// <param name="inputStream">The stream to read from.</param>
+    /// <exception cref="InvalidDataException"/>
+    /// <exception cref="IOException"/>
+    public static T Load<T>(Stream inputStream)
+    {
         string json;
-        using (stream)
+        using (inputStream)
         {
-            using StreamReader reader = new(stream);
+            using StreamReader reader = new(inputStream);
             json = reader.ReadToEnd();
         }
         T? result;
@@ -81,11 +97,23 @@ public static class ConfigurationIO
     /// </summary>
     /// <param name="obj">The object to save.</param>
     /// <param name="path">The path of the file to write to. If relative, treated as relative to <see cref="BaseDirectory"/>.</param>
-    public static void Save<T>(T obj, string path)
+    /// <param name="jsonWriterOptions">Custom json writer options. If null, defaults to <see cref="JsonWriterOptions"/>.</param>
+    public static void Save<T>(T obj, string path, JsonWriterOptions? jsonWriterOptions = null)
     {
         path = GetFilePath(path);
         using FileStream stream = new(path, FileMode.Create, FileAccess.Write);
-        using Utf8JsonWriter jWriter = new(stream, new JsonWriterOptions() { Indented = true });
+        Save(obj, stream, jsonWriterOptions);
+    }
+
+    /// <summary>
+    /// Saves the given object to the given output stream.
+    /// </summary>
+    /// <param name="obj">The object to save.</param>
+    /// <param name="outputStream">The stream to write to.</param>
+    /// <param name="jsonWriterOptions">Custom json writer options. If null, defaults to <see cref="JsonWriterOptions"/>.</param>
+    public static void Save<T>(T obj, Stream outputStream, JsonWriterOptions? jsonWriterOptions = null)
+    {
+        using Utf8JsonWriter jWriter = new(outputStream, jsonWriterOptions ?? JsonWriterOptions);
         JsonSerializer.Serialize(jWriter, obj, JsonSerializerOptions);
     }
 
