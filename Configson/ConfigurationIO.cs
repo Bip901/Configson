@@ -9,6 +9,8 @@ namespace Configson;
 /// </summary>
 public static class ConfigurationIO
 {
+    private const string BACKUP_FILE_EXTENSION = ".bak";
+
     /// <summary>
     /// The directory that relative paths will be relative to. Defaults to the current working directory.
     /// </summary>
@@ -17,11 +19,20 @@ public static class ConfigurationIO
     /// <summary>
     /// Sets <see cref="BaseDirectory"/>. A common pattern is to call this once in a static constructor so you only need to specify relative paths when saving and loading objects later.
     /// </summary>
-    public static void SetBaseDirectory(string path, RelativePathType pathType = RelativePathType.RelativeToCurrentWorkingDirectory)
+    public static void SetBaseDirectory(
+        string path,
+        RelativePathType pathType = RelativePathType.RelativeToCurrentWorkingDirectory
+    )
     {
         if (pathType == RelativePathType.RelativeToAppData)
         {
-            path = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create), path);
+            path = Path.Join(
+                Environment.GetFolderPath(
+                    Environment.SpecialFolder.ApplicationData,
+                    Environment.SpecialFolderOption.Create
+                ),
+                path
+            );
         }
         else if (pathType == RelativePathType.RelativeToAppBaseDirectory)
         {
@@ -38,7 +49,8 @@ public static class ConfigurationIO
     /// <summary>
     /// Custom options for writing output JSONs. Defaults to indented.
     /// </summary>
-    public static JsonWriterOptions JsonWriterOptions { get; set; } = new JsonWriterOptions() { Indented = true };
+    public static JsonWriterOptions JsonWriterOptions { get; set; } =
+        new JsonWriterOptions() { Indented = true };
 
     /// <summary>
     /// Loads the saved object from disk.
@@ -93,7 +105,7 @@ public static class ConfigurationIO
     }
 
     /// <summary>
-    /// Saves the given object to disk.
+    /// Saves the given object to disk atomically.
     /// </summary>
     /// <param name="obj">The object to save.</param>
     /// <param name="path">The path of the file to write to. If relative, treated as relative to <see cref="BaseDirectory"/>.</param>
@@ -101,8 +113,12 @@ public static class ConfigurationIO
     public static void Save<T>(T obj, string path, JsonWriterOptions? jsonWriterOptions = null)
     {
         path = GetFilePath(path);
-        using FileStream stream = new(path, FileMode.Create, FileAccess.Write);
-        Save(obj, stream, jsonWriterOptions);
+        string backupFilePath = path + BACKUP_FILE_EXTENSION;
+        using (FileStream stream = new(backupFilePath, FileMode.Create, FileAccess.Write))
+        {
+            Save(obj, stream, jsonWriterOptions);
+        }
+        File.Move(backupFilePath, path);
     }
 
     /// <summary>
@@ -111,7 +127,11 @@ public static class ConfigurationIO
     /// <param name="obj">The object to save.</param>
     /// <param name="outputStream">The stream to write to.</param>
     /// <param name="jsonWriterOptions">Custom json writer options. If null, defaults to <see cref="JsonWriterOptions"/>.</param>
-    public static void Save<T>(T obj, Stream outputStream, JsonWriterOptions? jsonWriterOptions = null)
+    public static void Save<T>(
+        T obj,
+        Stream outputStream,
+        JsonWriterOptions? jsonWriterOptions = null
+    )
     {
         using Utf8JsonWriter jWriter = new(outputStream, jsonWriterOptions ?? JsonWriterOptions);
         JsonSerializer.Serialize(jWriter, obj, JsonSerializerOptions);
