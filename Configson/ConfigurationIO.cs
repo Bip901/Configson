@@ -118,7 +118,7 @@ public static class ConfigurationIO
         {
             Save(obj, stream, jsonWriterOptions);
         }
-        File.Move(backupFilePath, path);
+        File.Move(backupFilePath, path, overwrite: true);
     }
 
     /// <summary>
